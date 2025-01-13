@@ -68,7 +68,9 @@ su - azuredevops -c "./config.sh \
     --url $ORG_URL \
     --pool $POOL_NAME \
     --auth PAT \
-    --token $PAT_TOKEN"
+    --token $PAT_TOKEN
+    --acceptTeeEula
+    --replace"
 
 echo "Agent configured successfully."
 
