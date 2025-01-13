@@ -72,7 +72,7 @@ chmod +x ./config.sh
 echo "Agent configured successfully."
 
 # Install dependencies
-sudo ./bin/installdependencies.sh
+# sudo ./bin/installdependencies.sh
 
 # Install the agent
 # echo "Installing the agent as a service..."
