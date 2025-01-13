@@ -57,6 +57,12 @@ echo "Extracting the agent to $INSTALL_DIR..."
 tar -zxvf agent.tar.gz -C $INSTALL_DIR
 rm agent.tar.gz
 
+# Remove existing agent configuration if it exists
+if [ -f "$INSTALL_DIR/.agent" ]; then
+    echo "Removing existing Azure DevOps agent configuration..."
+    su - azuredevops -c "./config.sh remove --unattended"
+fi
+
 # Configure the agent
 echo "Configuring the Azure DevOps agent..."
 cd $INSTALL_DIR
