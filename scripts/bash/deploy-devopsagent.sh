@@ -74,6 +74,12 @@ su - azuredevops -c "./config.sh \
 
 echo "Agent configured successfully."
 
+if [ $? -ne 0 ]; then
+    echo "Error during agent configuration. Displaying log file:"
+    cat /opt/azure/devops/agent/_diag/Agent_$(date +%Y%m%d)-*.log
+    exit 1
+fi
+
 # Install dependencies
 # sudo ./bin/installdependencies.sh
 
