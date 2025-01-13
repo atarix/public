@@ -49,6 +49,10 @@ echo "Installing PowerShell commandlets..."
 sudo apt-get update
 sudo apt-get install -y powershell
 
+# Install powershell-yaml module
+echo "Installing powershell-yaml module..."
+pwsh -Command "Install-Module -Name powershell-yaml -Force -Scope AllUsers"
+
 # Install Azure DevOps Agent
 # Create a directory for the agent
 echo "Creating installation directory at $INSTALL_DIR..."
