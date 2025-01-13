@@ -68,8 +68,8 @@ su - azuredevops -c "./config.sh \
     --url $ORG_URL \
     --pool $POOL_NAME \
     --auth PAT \
-    --token $PAT_TOKEN
-    --acceptTeeEula
+    --token $PAT_TOKEN \
+    --acceptTeeEula \
     --replace"
 
 echo "Agent configured successfully."
@@ -81,16 +81,16 @@ if [ $? -ne 0 ]; then
 fi
 
 # Install dependencies
-# sudo ./bin/installdependencies.sh
+sudo ./bin/installdependencies.sh
 
 # Install the agent
-# echo "Installing the agent as a service..."
-# chmod +x ./svc.sh
-# sudo ./svc.sh install
+echo "Installing the agent as a service..."
+chmod +x ./svc.sh
+sudo ./svc.sh install
 
 # Start the agent service
-# echo "Starting the agent service..."
-# sudo ./svc.sh start
+echo "Starting the agent service..."
+sudo ./svc.sh start
 
-# echo "Azure DevOps agent setup completed successfully."
+echo "Azure DevOps agent setup completed successfully."
 
