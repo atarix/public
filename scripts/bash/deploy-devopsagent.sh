@@ -61,7 +61,7 @@ rm agent.tar.gz
 echo "Configuring the Azure DevOps agent..."
 cd $INSTALL_DIR
 chmod +x ./config.sh
-sudo -u azuredevops ./config.sh \
+su azuredevops -c ./config.sh \
     --unattended \
     --agent $AGENT_NAME \
     --url $ORG_URL \
