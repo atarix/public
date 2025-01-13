@@ -24,6 +24,11 @@ sudo apt-get update -y
 echo "Installing dependencies..."
 sudo apt-get install -y libcurl4 openssl jq
 
+# Install Git
+echo "Installing Git..."
+sudo apt-get update
+sudo apt-get install -y git
+
 # Install Azure CLI
 echo "Installing Azure CLI..."
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
@@ -38,6 +43,11 @@ echo "Installing PowerShell..."
 wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
 sudo dpkg -i packages-microsoft-prod.deb
 rm packages-microsoft-prod.deb
+
+# Install PowerShell commandlets
+echo "Installing PowerShell commandlets..."
+sudo apt-get update
+sudo apt-get install -y powershell
 
 # Install Azure DevOps Agent
 # Create a directory for the agent
