@@ -50,11 +50,11 @@ sudo useradd -m -d $INSTALL_DIR -s /bin/bash azuredevops || echo "User 'azuredev
 
 # Download the latest agent package
 echo "Downloading Azure DevOps agent from $AGENT_VERSION_URL..."
-wget -O $AGENT_VERSION_URL
+wget -O agent.tar.gz $AGENT_VERSION_URL
 
 # Extract the agent package
 echo "Extracting the agent to $INSTALL_DIR..."
-tar -zxvf $(basename $AGENT_VERSION_URL) -C $INSTALL_DIR
+tar -zxvf agent.tar.gz -C $INSTALL_DIR
 rm agent.tar.gz
 
 # Configure the agent
