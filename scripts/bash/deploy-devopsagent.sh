@@ -58,18 +58,19 @@ tar -zxvf agent.tar.gz -C $INSTALL_DIR
 rm agent.tar.gz
 
 # Configure the agent
-# echo "Configuring the Azure DevOps agent..."
-# cd $INSTALL_DIR
-# chmod +x ./config.sh
-# su azuredevops -c ./config.sh \
-#     --unattended \
-#     --agent $AGENT_NAME \
-#     --url $ORG_URL \
-#     --pool $POOL_NAME \
-#     --auth PAT \
-#     --token $PAT_TOKEN
+echo "Configuring the Azure DevOps agent..."
+cd $INSTALL_DIR
+chmod +x ./config.sh
+sudo chown -R azuredevops:azuredevops $INSTALL_DIR
+su - azuredevops -c "./config.sh \
+    --unattended \
+    --agent $AGENT_NAME \
+    --url $ORG_URL \
+    --pool $POOL_NAME \
+    --auth PAT \
+    --token $PAT_TOKEN"
 
-# echo "Agent configured successfully."
+echo "Agent configured successfully."
 
 # Install dependencies
 # sudo ./bin/installdependencies.sh
