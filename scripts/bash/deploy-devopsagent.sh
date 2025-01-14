@@ -53,6 +53,10 @@ sudo apt-get install -y powershell
 echo "Installing powershell-yaml module..."
 pwsh -Command "Install-Module -Name powershell-yaml -Force -Scope AllUsers"
 
+# Install SQL Server module
+echo "Installing sqlserver module..."
+pwsh -Command "Install-Module -Name sqlserver -Force -Scope AllUsers"
+
 # Install Azure DevOps Agent
 # Create a directory for the agent
 echo "Creating installation directory at $INSTALL_DIR..."
