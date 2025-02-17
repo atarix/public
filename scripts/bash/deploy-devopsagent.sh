@@ -110,5 +110,15 @@ sudo ./svc.sh install
 echo "Starting the agent service..."
 sudo ./svc.sh start
 
+# Set Azure DNS as the default DNS server
+AZURE_DNS="168.63.129.16"
+RESOLV_CONF="/etc/resolv.conf"
+echo "Backing up existing resolv.conf..."
+sudo cp "$RESOLV_CONF" "$RESOLV_CONF.bak"
+echo "Setting DNS server to Azure DNS ($AZURE_DNS)..."
+echo "nameserver $AZURE_DNS" | sudo tee "$RESOLV_CONF" > /dev/null
+echo "Done! Current /etc/resolv.conf:"
+cat "$RESOLV_CONF"
+
 echo "Azure DevOps agent setup completed successfully."
 
