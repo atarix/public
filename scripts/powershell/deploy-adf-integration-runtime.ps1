@@ -11,12 +11,12 @@ if (! (Test-Path($logLoc)))
 $logPath = "$logLoc\tracelog.log"
 "Start to excute gatewayInstall.ps1. `n" | Out-File $logPath
 
-function Update-NowValue()
+function Now-Value()
 {
     return (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 }
 
-function Write-Error([string] $msg)
+function Throw-Error([string] $msg)
 {
 	try 
 	{
@@ -33,7 +33,7 @@ function Write-Error([string] $msg)
 
 function Trace-Log([string] $msg)
 {
-    $now = Update-NowValue
+    $now = Now-Value
     try
     {
         "${now} $msg`n" | Out-File $logPath -Append
@@ -45,9 +45,9 @@ function Trace-Log([string] $msg)
 
 }
 
-function Start-Process([string] $process, [string] $arguments)
+function Run-Process([string] $process, [string] $arguments)
 {
-	Write-Verbose "Start-Process: $process $arguments"
+	Write-Verbose "Run-Process: $process $arguments"
 	
 	$errorFile = "$env:tmp\tmp$pid.err"
 	$outFile = "$env:tmp\tmp$pid.out"
@@ -70,18 +70,15 @@ function Start-Process([string] $process, [string] $arguments)
 	$errContent = [string] (Get-Content -Path $errorFile -Delimiter "!!!DoesNotExist!!!")
 	$outContent = [string] (Get-Content -Path $outFile -Delimiter "!!!DoesNotExist!!!")
 
-	if (Test-Path $errorFile) {
-    try { Remove-Item $errorFile -ErrorAction Stop } catch {}
-	}
-	if (Test-Path $outFile) {
-		try { Remove-Item $outFile -ErrorAction Stop } catch {}
-	}
+	Remove-Item $errorFile
+	Remove-Item $outFile
+
 	if($proc.ExitCode -ne 0 -or $errVariable -ne "")
 	{		
-		Write-Error "Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable, errContent=$errContent, outContent=$outContent."
+		Throw-Error "Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable, errContent=$errContent, outContent=$outContent."
 	}
 
-	Trace-Log "Start-Process: ExitCode=$($proc.ExitCode), output=$outContent"
+	Trace-Log "Run-Process: ExitCode=$($proc.ExitCode), output=$outContent"
 
 	if ([string]::IsNullOrEmpty($outContent))
 	{
@@ -91,7 +88,7 @@ function Start-Process([string] $process, [string] $arguments)
 	return $outContent.Trim()
 }
 
-function Import-Gateway([string] $url, [string] $gwPath)
+function Download-Gateway([string] $url, [string] $gwPath)
 {
     try
     {
@@ -113,16 +110,16 @@ function Install-Gateway([string] $gwPath)
 {
 	if ([string]::IsNullOrEmpty($gwPath))
     {
-		Write-Error "Gateway path is not specified"
+		Throw-Error "Gateway path is not specified"
     }
 
 	if (!(Test-Path -Path $gwPath))
 	{
-		Write-Error "Invalid gateway path: $gwPath"
+		Throw-Error "Invalid gateway path: $gwPath"
 	}
 	
 	Trace-Log "Start Gateway installation"
-	Start-Process "msiexec.exe" "/i gateway.msi INSTALLTYPE=AzureTemplate /quiet /norestart"		
+	Run-Process "msiexec.exe" "/i gateway.msi INSTALLTYPE=AzureTemplate /quiet /norestart"		
 	
 	Start-Sleep -Seconds 30	
 
@@ -152,7 +149,7 @@ function Get-InstalledFilePath()
 	$filePath = Get-RegistryProperty "hklm:\Software\Microsoft\DataTransfer\DataManagementGateway\ConfigurationManager" "DiacmdPath"
 	if ([string]::IsNullOrEmpty($filePath))
 	{
-		Write-Error "Get-InstalledFilePath: Cannot find installed File Path"
+		Throw-Error "Get-InstalledFilePath: Cannot find installed File Path"
 	}
     Trace-Log "Gateway installation file: $filePath"
 
@@ -163,8 +160,8 @@ function Register-Gateway([string] $instanceKey)
 {
     Trace-Log "Register Agent"
 	$filePath = Get-InstalledFilePath
-	Start-Process $filePath "-era 8060"
-	Start-Process $filePath "-k $instanceKey"
+	Run-Process $filePath "-era 8060"
+	Run-Process $filePath "-k $instanceKey"
     Trace-Log "Agent registration is successful!"
 }
 
@@ -177,7 +174,7 @@ $gwPath= "$PWD\gateway.msi"
 Trace-Log "Gateway download location: $gwPath"
 
 
-Import-Gateway $uri $gwPath
+Download-Gateway $uri $gwPath
 Install-Gateway $gwPath
 
 Register-Gateway $gatewayKey
