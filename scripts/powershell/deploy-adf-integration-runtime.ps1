@@ -71,13 +71,11 @@ function Start-Process([string] $process, [string] $arguments)
 	$outContent = [string] (Get-Content -Path $outFile -Delimiter "!!!DoesNotExist!!!")
 
 	if (Test-Path $errorFile) {
-	Remove-Item $errorFile
+    try { Remove-Item $errorFile -ErrorAction Stop } catch {}
 	}
-
 	if (Test-Path $outFile) {
-	Remove-Item $outFile 
+		try { Remove-Item $outFile -ErrorAction Stop } catch {}
 	}
-
 	if($proc.ExitCode -ne 0 -or $errVariable -ne "")
 	{		
 		Write-Error "Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable, errContent=$errContent, outContent=$outContent."
