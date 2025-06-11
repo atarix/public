@@ -70,8 +70,13 @@ function Start-Process([string] $process, [string] $arguments)
 	$errContent = [string] (Get-Content -Path $errorFile -Delimiter "!!!DoesNotExist!!!")
 	$outContent = [string] (Get-Content -Path $outFile -Delimiter "!!!DoesNotExist!!!")
 
+	if (Test-Path $errorFile) {
 	Remove-Item $errorFile
-	Remove-Item $outFile
+	}
+
+	if (Test-Path $outFile) {
+	Remove-Item $outFile 
+	}
 
 	if($proc.ExitCode -ne 0 -or $errVariable -ne "")
 	{		
