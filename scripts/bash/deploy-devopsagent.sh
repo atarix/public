@@ -55,7 +55,7 @@ pwsh -Command "Install-Module -Name powershell-yaml -Force -Scope AllUsers"
 
 # Install SQL Server module
 echo "Installing sqlserver module..."
-pwsh -Command "Install-Module -Name sqlserver -Force -Scope AllUsers"
+pwsh -Command "Install-Module -Name sqlserver -RequiredVersion 22.2.0 -Force -Scope AllUsers"
 
 # Install Azure DevOps Agent
 # Create a directory for the agent
