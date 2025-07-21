@@ -17,9 +17,16 @@ INSTALL_DIR="/opt/azure/devops/agent"
 
 echo "Starting Azure DevOps agent setup..."
 
+# Update package lists
+echo "Updating package lists..."
+sudo apt-get update -y
+
+echo "Installing dependencies..."
+sudo apt-get install -y libcurl4 openssl jq
 
 # Install Git
 echo "Installing Git..."
+sudo apt-get update
 sudo apt-get install -y git
 
 # Install Azure CLI
@@ -32,7 +39,6 @@ az bicep install
 
 # Install PowerShell
 echo "Installing PowerShell..."
-
 # Import the public repository GPG keys
 wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
 sudo dpkg -i packages-microsoft-prod.deb
@@ -40,6 +46,7 @@ rm packages-microsoft-prod.deb
 
 # Install PowerShell commandlets
 echo "Installing PowerShell commandlets..."
+sudo apt-get update
 sudo apt-get install -y powershell
 
 # Install powershell-yaml module
