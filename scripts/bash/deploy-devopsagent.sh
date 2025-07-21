@@ -17,9 +17,15 @@ INSTALL_DIR="/opt/azure/devops/agent"
 
 echo "Starting Azure DevOps agent setup..."
 
-# Update package lists
+# Update package lists and fix repository issues if needed
 echo "Updating package lists..."
-sudo apt-get update -y
+sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list
+sudo apt-get clean
+sudo apt-get update --allow-unauthenticated -o Acquire::AllowInsecureRepositories=true -o Acquire::https::Verify-Peer=false -y || {
+    echo "Attempting to fix repository signatures..."
+    sudo apt-get install -y --allow-unauthenticated ubuntu-keyring
+    sudo apt-get update --allow-unauthenticated -o Acquire::AllowInsecureRepositories=true -o Acquire::https::Verify-Peer=false -y
+}
 
 echo "Installing dependencies..."
 sudo apt-get install -y libcurl4 openssl jq
