@@ -32,6 +32,7 @@ az bicep install
 
 # Install PowerShell
 echo "Installing PowerShell..."
+
 # Import the public repository GPG keys
 wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
 sudo dpkg -i packages-microsoft-prod.deb
