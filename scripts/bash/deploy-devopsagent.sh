@@ -19,10 +19,15 @@ echo "Starting Azure DevOps agent setup..."
 
 # Update package lists
 echo "Updating package lists..."
+
+# Fix for EOL Ubuntu: update sources.list to old-releases if needed
+echo "Commenting out all lines in /etc/apt/sources.list..."
+sudo sed -i 's/^[^#]/#&/' /etc/apt/sources.list
+
 sudo apt-get update -y
 
 echo "Installing dependencies..."
-sudo apt-get install -y libcurl4 openssl jq
+sudo apt-get install -y libcurl4 openssl
 
 # Install Git
 echo "Installing Git..."
