@@ -20,7 +20,7 @@ sudo ./data-disk-config.sh
 # 2. Install Docker and Docker Compose
 curl -O https://raw.githubusercontent.com/atarix/public/refs/heads/master/scripts/bash/docker-config.sh
 chmod +x docker-config.sh
-sudo ./docker-config.sh
+sudo ./docker-config.sh $USER_NAME
 
 # 1. Mount the partitioned and formatted data disk
 sudo mkdir -p /data
@@ -67,3 +67,5 @@ sudo chmod 644 /home/$USER_NAME/compose.yaml
 
 echo "Deployment files created. You can now run:"
 echo "cd /home/$USER_NAME && docker compose -f compose.yaml up -d"
+
+docker compose -f compose.yaml up -d

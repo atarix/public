@@ -2,14 +2,14 @@
 
 set -e
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <user_name>"
   exit 1
 fi
 
 USER_NAME="$1"
 # Variables
-COMPOSE_FILE="/home/${USER_NAME}/compose.yaml"  # <-- Set this to your compose file path
+COMPOSE_FILE="/home/$USER_NAME/compose.yaml"  # <-- Set this to your compose file path
 
 # Upgrade packages
 sudo apt-get update
