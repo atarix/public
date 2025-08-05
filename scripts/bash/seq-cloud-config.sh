@@ -68,4 +68,6 @@ sudo chmod 644 /home/$USER_NAME/compose.yaml
 echo "Deployment files created. You can now run:"
 echo "cd /home/$USER_NAME && docker compose -f compose.yaml up -d"
 
-docker compose -f compose.yaml up -d
+# 5. Start Docker Compose
+cd /home/$USER_NAME
+sudo docker compose -f compose.yaml up -d
