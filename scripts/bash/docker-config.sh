@@ -3,7 +3,7 @@
 set -e
 
 # Variables
-COMPOSE_FILE="/path/to/your/docker-compose.yml"  # <-- Set this to your compose file path
+COMPOSE_FILE="/home/${USER}/compose.yaml"  # <-- Set this to your compose file path
 
 # Upgrade packages
 sudo apt-get update
