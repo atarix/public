@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables (set these before running)
-disk_device=${disk_device:-/dev/sdc1}   # Example: /dev/sdc
+disk_device=${disk_device:-/dev/sdc}   # Example: /dev/sdc
 partition=${partition:-1}              # Default partition number
 
 # Wait for the disk to be attached
