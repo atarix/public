@@ -28,7 +28,7 @@ if ! blkid "$part_device" | grep -q ext4; then
 fi
 
 # Mount the partition (example mount point)
-mount_point="/mnt"
+mount_point="/mnt/data"
 mkdir -p "$mount_point"
 mount "$part_device" "$mount_point"
 
