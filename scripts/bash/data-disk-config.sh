@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables (set these before running)
-disk_device=${disk_device:-/dev/disk/azure/scsi1/lun0}   # Example: /dev/sdc
+disk_device=${disk_device:-/dev/sdc1}   # Example: /dev/sdc
 partition=${partition:-1}              # Default partition number
 
 # Wait for the disk to be attached
@@ -28,7 +28,7 @@ if ! blkid "$part_device" | grep -q ext4; then
 fi
 
 # Mount the partition (example mount point)
-mount_point="/mnt/data"
+mount_point="/mnt"
 mkdir -p "$mount_point"
 mount "$part_device" "$mount_point"
 
