@@ -16,10 +16,10 @@ sudo mount /dev/sdc1 /data
 
 # 2. Create Caddyfile
 cat <<EOF > /home/$USER_NAME/Caddyfile
-{
-  acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+#{
+  #acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
   #acme_ca https://acme-v02.api.letsencrypt.org/directory
-}
+#}
 
 ${FQDN} {
   reverse_proxy seq:80
@@ -33,7 +33,7 @@ services:
     image: datalust/seq:2024.3.13545
     environment:
       ACCEPT_EULA: Y
-      SEQ_API_CANONICALURI: https://${FQDN}
+      SEQ_API_CANONICALURI: http://${FQDN}
       SEQ_FIRSTRUN_ADMINPASSWORD: ${ADMIN_PASSWORD}
     volumes:
       - /data/seq:/data
@@ -43,7 +43,6 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
-      - 443:443
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - /data/caddy/data:/data
