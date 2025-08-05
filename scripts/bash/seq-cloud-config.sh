@@ -66,6 +66,3 @@ sudo ./data-disk-config.sh
 curl -O https://raw.githubusercontent.com/atarix/public/refs/heads/master/scripts/bash/docker-config.sh
 chmod +x docker-config.sh
 sudo ./docker-config.sh $USER_NAME
-
-# 7. Start Docker Compose
-sudo docker compose -f compose.yaml up -d
