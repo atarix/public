@@ -32,7 +32,7 @@ services:
     image: datalust/seq:2024.3.13545
     environment:
       ACCEPT_EULA: Y
-      SEQ_API_CANONICALURI: http://${FQDN}
+      SEQ_API_CANONICALURI: https://${FQDN}
       SEQ_FIRSTRUN_ADMINPASSWORD: ${ADMIN_PASSWORD}
     volumes:
       - /data/seq:/data
