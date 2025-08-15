@@ -16,10 +16,9 @@ sudo mount /dev/sdc1 /data
 
 # 2. Create Caddyfile
 cat <<EOF > /home/$USER_NAME/Caddyfile
-#{
-  acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
-  #acme_ca https://acme-v02.api.letsencrypt.org/directory
-#}
+{
+  acme_ca https://acme-v02.api.letsencrypt.org/directory
+}
 
 ${FQDN} {
   reverse_proxy seq:80
@@ -37,19 +36,17 @@ services:
       SEQ_FIRSTRUN_ADMINPASSWORD: ${ADMIN_PASSWORD}
     volumes:
       - /data/seq:/data
+
+  caddy:
+    image: caddy:2.8.4
+    restart: unless-stopped
     ports:
       - 80:80
-
-  # caddy:
-  #   image: caddy:2.8.4
-  #   restart: unless-stopped
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #     - /data/caddy/data:/data
-  #     - /data/caddy/config:/config
+      - 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - /data/caddy/data:/data
+      - /data/caddy/config:/config
 EOF
 
 # 4. Set permissions
