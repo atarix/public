@@ -17,7 +17,7 @@ sudo mount /dev/sdc1 /data
 # 2. Create Caddyfile
 cat <<EOF > /home/$USER_NAME/Caddyfile
 {
-  acme_ca https://acme-v02.api.letsencrypt.org/directory
+  #acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
 }
 
 ${FQDN} {
