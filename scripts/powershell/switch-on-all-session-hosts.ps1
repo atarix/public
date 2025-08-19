@@ -9,11 +9,11 @@ param (
 )
 
 function Show-Usage {
-    Write-Host "Usage: .\switch-on-all-session-hosts.ps1 -subname <SubscriptionName> [-durationInMinutes <DurationInMinutes>]" -ForegroundColor Yellow
-    Write-Host "Example: .\switch-on-all-session-hosts.ps1 -subname 'MySubscription' -durationInMinutes 120" -ForegroundColor Yellow
-    Write-Host "Parameters:" -ForegroundColor Yellow
-    Write-Host "  -subname: Name of the Azure subscription." -ForegroundColor Yellow
-    Write-Host "  -durationInMinutes: Duration in minutes to keep the session hosts on. Default is 60 minutes." -ForegroundColor Yellow
+    Write-Output "Usage: .\switch-on-all-session-hosts.ps1 -subname <SubscriptionName> [-durationInMinutes <DurationInMinutes>]"
+    Write-Output "Example: .\switch-on-all-session-hosts.ps1 -subname 'MySubscription' -durationInMinutes 120"
+    Write-Output "Parameters:"
+    Write-Output "  -subname: Name of the Azure subscription."
+    Write-Output "  -durationInMinutes: Duration in minutes to keep the session hosts on. Default is 60 minutes."
     exit 1
 }
 
@@ -21,7 +21,7 @@ function Assert-Params {
     $params = @($subname, $durationInMinutes)
     foreach ($param in $params) {
         if (-not $param) {
-            Write-Host "Error: Missing required parameter." -ForegroundColor Red
+            Write-Output "Error: Missing required parameter."
             Show-Usage
             throw "Required parameter is missing."
         }
@@ -37,26 +37,27 @@ function Get-ScalingPlan {
         $scalingPlans = Get-AzWvdScalingPlan
     }
     catch {
-        Write-Host "Error: Unable to retrieve scaling plan for host pool: $HostPoolName" -ForegroundColor Red
+        Write-Output "Error: Unable to retrieve scaling plan for host pool: $HostPoolName" | Out-Null
         return $null
     }
 
-    Write-Host "    Scaling plan: " -NoNewline -ForegroundColor Cyan
+    Write-Output "    Scaling plan: " | Out-Null
     foreach ($plan in $scalingPlans) {
         foreach ($hostPoolRef in $plan.HostPoolReference) {
             $hostPoolRefName = $hostPoolRef.HostPoolArmPath.Split('/')[-1]
             if ($hostPoolRefName -eq $HostPoolName) {
-                Write-Host $plan.Name -ForegroundColor Green
-                return @{
+                Write-Output $plan.Name | Out-Null
+                $scalingPlan = [PSCustomObject]@{
                     Name          = $plan.Name
-                    Status        = $hostPoolRef.ScalingPlanEnabled ? "Enabled" : "Disabled"
+                    Status        = if ($hostPoolRef.ScalingPlanEnabled) { "Enabled" } else { "Disabled" }
                     ResourceId    = $hostPoolRef.HostPoolArmPath
                     ResourceGroup = $plan.ResourceGroupName
                 }
+                return $scalingPlan
             }
         }
     }
-    Write-Host "Not found." -ForegroundColor Red
+    Write-Output "Not found." | Out-Null
     return $null
 }
 
@@ -66,7 +67,7 @@ function Start-SessionHosts {
         [string]$HostPoolResourceGroupName
     )
 
-    Write-Host "`n    Starting session hosts for host pool: $HostPoolName" -ForegroundColor Cyan
+    Write-Output "`n    Starting session hosts for host pool: $HostPoolName"
 
     $sessionHosts = Get-AzWvdSessionHost -ResourceGroupName $HostPoolResourceGroupName -HostPoolName $HostPoolName -ErrorAction SilentlyContinue
 
@@ -76,20 +77,20 @@ function Start-SessionHosts {
                 $vm = Get-AzVM -ResourceId $sessionHost.ResourceId -Status
 
                 if ($vm.Statuses.Code -contains "PowerState/running") {
-                    Write-Host "    VM: $($sessionHost.Name) is already running." -ForegroundColor Green
+                    Write-Output "    VM: $($sessionHost.Name) is already running."
                 }
                 else {
-                    Write-Host "    Starting VM: $($sessionHost.Name)" -ForegroundColor Cyan
+                    Write-Output "    Starting VM: $($sessionHost.Name)"
                     Get-AzVM -ResourceId $sessionHost.ResourceId | Start-AzVM -NoWait
                 }
             }
             catch {
-                Write-Warning "    Failed to start VM $($sessionHost.Name): $_"
+                Write-Output "    Failed to start VM $($sessionHost.Name): $_"
             }
         }
 
         # Wait for all VMs to be running
-        Write-Host "    Waiting for VMs to be in running state..." -ForegroundColor Cyan
+        Write-Output "    Waiting for VMs to be in running state..."
 
         $checkIntervalSeconds = 15
         $timeoutMinutes = 45
@@ -105,34 +106,34 @@ function Start-SessionHosts {
                     }
                 }
                 catch {
-                    Write-Warning "    Failed to retrieve status for VM $($sessionHost.Name): $_"
+                    Write-Output "    Failed to retrieve status for VM $($sessionHost.Name): $_"
                 }
             }
 
             if (-not $nonRunning) {
-                Write-Host ("    All VMs are running after {0:N1} minutes." -f $sw.Elapsed.TotalMinutes) -ForegroundColor Green
+                Write-Output ("    All VMs are running after {0:N1} minutes." -f $sw.Elapsed.TotalMinutes)
                 break
             }
 
-            Write-Host "    These VMs are currently deallocated:" -ForegroundColor Yellow
+            Write-Output "    These VMs are currently deallocated:"
             foreach ($vm in $nonRunning) {
-                Write-Host "     - $($vm.Name)" -ForegroundColor Yellow
+                Write-Output "     - $($vm.Name)"
             }
 
-            Write-Host ("    {0} – {1} VM(s) still starting..." -f (Get-Date -Format "HH:mm:ss"), $nonRunning.Count) -ForegroundColor DarkGray
+            Write-Output ("    {0} – {1} VM(s) still starting..." -f (Get-Date -Format "HH:mm:ss"), $nonRunning.Count)
             Start-Sleep -Seconds $checkIntervalSeconds
 
         } while ($sw.Elapsed.TotalMinutes -lt $timeoutMinutes)
 
         if ($nonRunning) {
-            Write-Warning ("    Timeout of {0} min reached – {1} VM(s) are still not running." `
+            Write-Output ("    Timeout of {0} min reached – {1} VM(s) are still not running." `
                     -f $timeoutMinutes, $nonRunning.Count)
             exit 1
         }
 
     }
     else {
-        Write-Host "    No session hosts found in host pool '$HostPoolName'. Skipping VM start sequence." -ForegroundColor Yellow
+        Write-Output "    No session hosts found in host pool '$HostPoolName'. Skipping VM start sequence."
     }
 }
 
@@ -151,36 +152,37 @@ function Wait-AndLogProgress {
     }
     $elapsedSeconds = 0
 
-    Write-Host "Waiting for $DurationInMinutes minutes..." -ForegroundColor Yellow
+    Write-Output "Waiting for $DurationInMinutes minutes..."
 
     while ($elapsedSeconds -lt $totalSeconds) {
         Start-Sleep -Seconds $intervalSeconds
         $elapsedSeconds += $intervalSeconds
-        Write-Host ("Elapsed time: {0:N1} minutes" -f ($elapsedSeconds / 60)) -ForegroundColor Cyan
+        Write-Output ("Elapsed time: {0:N1} minutes" -f ($elapsedSeconds / 60))
     }
 
-    Write-Host "Wait time completed." -ForegroundColor Green
+    Write-Output "Wait time completed."
 }
 
 
 # ================================================================
 # Main Script Execution
 # ================================================================
-# Assert-Params
+Assert-Params
 
-Write-Host "Switching on all session hosts for $durationInMinutes minutes..." -ForegroundColor Cyan
-Write-Host "Subscription        : $subname`n" -ForegroundColor Cyan
+Write-Output "Switching on all session hosts for $durationInMinutes minutes..."
+Write-Output "Subscription        : $subname`n"
 
+# scalingPlanSnaps empty array to store scaling plan snapshots for rollback
 $scalingPlanSnaps = @()
 
 # ----------------------------------------------------------------
 # Connect to Azure account
 # ----------------------------------------------------------------
 try {
-    connect-azaccount -Subscription $subname -Identity
+    connect-azaccount -Subscription $subname# -Identity
 }
 catch {
-    Write-Host "Error: Unable to connect to Azure with the provided subscription." -ForegroundColor Red
+    Write-Output "Error: Unable to connect to Azure with the provided subscription."
     throw "Connection failed."
 }
 
@@ -190,18 +192,18 @@ catch {
 try {
     $hostPools = Get-AzWvdHostPool
     if ($hostPools.Count -eq 0) {
-        Write-Host "No host pools found in the subscription." -ForegroundColor Yellow
+        Write-Output "No host pools found in the subscription."
         exit 0
     }
     else {
-        Write-Host "Found $($hostPools.Count) host pools in the subscription." -ForegroundColor Green
+        Write-Output "Found $($hostPools.Count) host pools in the subscription."
         foreach ($hostPool in $hostPools) {
-            Write-Host "     - $($hostPool.Name)" -ForegroundColor Cyan
+            Write-Output "     - $($hostPool.Name)"
         }
     }
 }
 catch {
-    Write-Host "Error: Unable to retrieve host pools for the subscription." -ForegroundColor Red
+    Write-Output "Error: Unable to retrieve host pools for the subscription."
     throw "Failed to get host pools."
 }
 
@@ -210,25 +212,25 @@ catch {
 # Disable scaling plans for each host pool
 # ----------------------------------------------------------------
 foreach ($hostPool in $hostPools) {
-    Write-Host "`nProcessing host pool: $($hostPool.Name)" -ForegroundColor Cyan
+    Write-Output "`nProcessing host pool: $($hostPool.Name)"
 
     $scalingPlan = Get-ScalingPlan -HostPoolName $hostPool.Name
 
     if ($scalingPlan) {
-        Write-Host "          Status: " -NoNewline -ForegroundColor Cyan
-
+        Write-Output "          Status: "
         # Add scaling plan to snapshot for rollback
         $scalingPlanSnaps += $scalingPlan
 
         if ($scalingPlan.Status -eq "Enabled") {
-            Write-Host "Enabled" -ForegroundColor Green
+
+            Write-Output "Enabled"
 
             $modifiedRefs = @{
                 HostPoolArmPath    = $scalingPlan.ResourceId
                 ScalingPlanEnabled = $false
             }
 
-            Write-Host "`nDisabling scaling plan during script execution..." -ForegroundColor Yellow
+            Write-Output "`nDisabling scaling plan during script execution..."
 
             # ----------------------------------------------------------------
             # Disable scaling plans
@@ -237,12 +239,13 @@ foreach ($hostPool in $hostPools) {
                 Update-AzWvdScalingPlan -ResourceGroupName $scalingPlan.ResourceGroup -Name $scalingPlan.Name -HostPoolReference $modifiedRefs | Out-Null
             }
             catch {
-                Write-Host "Error: Unable to disable scaling plan for host pool: $($hostPool.Name)" -ForegroundColor Red
+                Write-Output "Error: Unable to disable scaling plan for host pool: $($hostPool.Name)"
                 Write-Error $_
                 continue
-            }        }
+            }        
+        }
         else {
-            Write-Host "Disabled" -ForegroundColor Red
+            Write-Output "Disabled"
         }
 
         # ----------------------------------------------------------------
@@ -258,7 +261,7 @@ foreach ($hostPool in $hostPools) {
 Wait-AndLogProgress -DurationInMinutes $durationInMinutes
 
 foreach ($scalingPlan in $scalingPlanSnaps) {
-    Write-Host "`nRe-enabling scaling plan: $($scalingPlan.Name)" -ForegroundColor Cyan
+    Write-Output "`nRe-enabling scaling plan: $($scalingPlan.Name)"
 
     $modifiedRefs = @{
         HostPoolArmPath    = $scalingPlan.ResourceId
@@ -267,10 +270,10 @@ foreach ($scalingPlan in $scalingPlanSnaps) {
 
     try {
         Update-AzWvdScalingPlan -ResourceGroupName $scalingPlan.ResourceGroup -Name $scalingPlan.Name -HostPoolReference $modifiedRefs | Out-Null
-        Write-Host "Scaling plan re-enabled successfully." -ForegroundColor Green
+        Write-Output "Scaling plan re-enabled successfully."
     }
     catch {
-        Write-Host "Error: Unable to re-enable scaling plan for host pool: $($scalingPlan.Name)" -ForegroundColor Red
+        Write-Output "Error: Unable to re-enable scaling plan for host pool: $($scalingPlan.Name)"
         Write-Error $_
     }
 }
