@@ -67,7 +67,7 @@ function Start-SessionHosts {
         [string]$HostPoolResourceGroupName
     )
 
-    Write-Output "`n    Starting session hosts for host pool: $HostPoolName"
+    Write-Output "`n    Starting session hosts for host pool: $HostPoolName in resource group: $HostPoolResourceGroupName"
 
     $sessionHosts = Get-AzWvdSessionHost -ResourceGroupName $HostPoolResourceGroupName -HostPoolName $HostPoolName -ErrorAction SilentlyContinue
 
@@ -251,7 +251,10 @@ foreach ($hostPool in $hostPools) {
         # ----------------------------------------------------------------
         # Start all session hosts in the host pool
         # ----------------------------------------------------------------
-        Start-SessionHosts -HostPoolName $hostPool.Name -HostPoolResourceGroupName $hostPool.ResourceGroupName
+        $hostPoolName = $hostPool.Name
+        $hostPoolResourceGroupName = $hostPool.Id.Split('/')[-5] # Extract resource group name from the host pool ID
+
+        Start-SessionHosts -HostPoolName $hostPoolName -HostPoolResourceGroupName $hostPoolResourceGroupName
     }
 }
 
