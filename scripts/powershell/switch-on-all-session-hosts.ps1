@@ -179,7 +179,7 @@ $scalingPlanSnaps = @()
 # Connect to Azure account
 # ----------------------------------------------------------------
 try {
-    connect-azaccount -Subscription $subname# -Identity
+    connect-azaccount -Subscription $subname -Identity
 }
 catch {
     Write-Output "Error: Unable to connect to Azure with the provided subscription."
