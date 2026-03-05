@@ -1,3 +1,15 @@
+# ------------------------------------------------------------------------------
+# Script Name: data-disk-config.sh
+# Description: Configures a data disk on an Azure VM (partition, format, mount)
+# Usage: ./data-disk-config.sh
+#
+# Note: Set the 'disk_device' variable to the appropriate disk (e.g., /dev/sdc)
+#       and 'partition' variable if using a different partition number.
+#
+# Author: James Kho
+# Date: January 13, 2025
+# ------------------------------------------------------------------------------
+
 #!/bin/bash
 
 # Variables (set these before running)
