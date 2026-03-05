@@ -1,3 +1,22 @@
+# -----------------------------------------------------------------------------
+# Introduction:
+# This script is used by the Cloud Adoption Framework (CAF) to deploy deployment
+# servers in an automated fashion. It installs and configures an Azure DevOps 
+# agent on a Linux machine. And is available publicly for use and reference.
+#
+# Script parameters:
+# - ORG_URL: The URL of the Azure DevOps organization (e.g., https://dev.azure.com/yourorganization)
+# - POOL_NAME: The name of the agent pool to which the agent will be added
+# - PAT_TOKEN: A Personal Access Token (PAT) with appropriate permissions to register the agent
+# - AGENT_NAME: The name to assign to the Azure DevOps agent
+#
+# Usage:
+# ./deploy-devopsagent.sh <ORG_URL> <POOL_NAME> <PAT_TOKEN> <AGENT_NAME>
+#
+# Author: James Kho
+# Date: January 13, 2025
+# -----------------------------------------------------------------------------
+
 #!/bin/bash
 
 set -e
