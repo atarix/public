@@ -54,6 +54,10 @@ echo "Installing PowerShell commandlets..."
 sudo apt-get update
 sudo apt-get install -y powershell
 
+# Install Az PowerShell module
+echo "Installing Az PowerShell module..."
+pwsh -Command "Install-Module -Name Az -Force -AllowClobber -Scope AllUsers"
+
 # Install powershell-yaml module
 echo "Installing powershell-yaml module..."
 pwsh -Command "Install-Module -Name powershell-yaml -Force -Scope AllUsers"
