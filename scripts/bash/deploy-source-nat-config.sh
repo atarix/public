@@ -5,13 +5,14 @@ set -e
 # Check if all parameters are provided
 if [ "$#" -ne 4 ]; then
     echo "Usage: $0 <NATed_IP_ADDRESS> <SOURCE_IP_CIDR> <DESTINATION_IP_CIDR>"
+    
     exit 1
 fi
 
 # Assign the parameters to variables
 NATed_IP_ADDRESS=$1
-SOURCE_IP_CIDR=($2)
-DESTINATION_IP_CIDR=($3)
+SOURCE_IP_CIDR=(${2//,/ })
+DESTINATION_IP_CIDR=(${3//,/ })
 
 #Create the directory:
 sudo mkdir -p /etc/iptables
