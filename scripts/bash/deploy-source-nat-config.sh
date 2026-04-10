@@ -23,15 +23,15 @@ sudo mkdir -p /etc/iptables
 # Enable IP Forwarding
 sudo sysctl -w net.ipv4.ip_forward=1
 
-# Set up NAT for traffic from 10.253.134.16/28 to 10.125.80.50:80
+# Set up NAT for traffic from source to destination
 for DEST in "${DESTINATION_IP_CIDR[@]}"; do
     for SOURCE in "${SOURCE_IP_CIDR[@]}"; do
-        sudo iptables -t nat -A PREROUTING -s $SOURCE -d $DEST -p tcp --dport $TCP_PORT -j DNAT --to-destination $NATed_IP_ADDRESS:$TCP_PORT
+        sudo iptables -t nat -A POSTROUTING -s $SOURCE -d $DEST -j SNAT --to-source $NATed_IP_ADDRESS
     done
 done
     
 
-# Add a rule to forward traffic to 10.125.80.0/24
+# Add a rule to forward traffic to the destination
 for DEST in "${DESTINATION_IP_CIDR[@]}"; do
     sudo iptables -A FORWARD -d $DEST -j ACCEPT
     sudo iptables -A FORWARD -s $DEST -j ACCEPT
@@ -40,4 +40,3 @@ done
 
 #Persist iptables Rules:
 sudo sh -c "iptables-save > /etc/iptables/rules.v4"
-
