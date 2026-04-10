@@ -3,7 +3,7 @@
 set -e
 
 # Check if all parameters are provided
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <NATed_IP_ADDRESS> <SOURCE_IP_CIDR> <DESTINATION_IP_CIDR>"
     
     exit 1
