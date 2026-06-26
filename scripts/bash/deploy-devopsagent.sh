@@ -31,7 +31,7 @@ ORG_URL=$1
 POOL_NAME=$2
 PAT_TOKEN=$3
 AGENT_NAME=$4
-AGENT_VERSION_URL="https://download.agent.dev.azure.com/agent/4.258.1/vsts-agent-linux-x64-4.258.1.tar.gz"
+AGENT_VERSION_URL="https://download.agent.dev.azure.com/agent/4.274.1/vsts-agent-linux-x64-4.274.1.tar.gz"
 INSTALL_DIR="/opt/azure/devops/agent"
 
 echo "Starting Azure DevOps agent setup..."
